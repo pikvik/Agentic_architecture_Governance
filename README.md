@@ -1,6 +1,6 @@
 # 🤖 Agentic AI Autonomous Governance Swarm
 
-A comprehensive multi-agent system for end-to-end architecture governance and validation, built with FastAPI backend and React frontend.
+A comprehensive multi-agent system for end-to-end architecture governance and validation, built with FastAPI backend and React frontend. Features local Dify deployment, Ollama LLM integration, and advanced file processing capabilities.
 
 ## 🏗️ Architecture Overview
 
@@ -13,6 +13,12 @@ A comprehensive multi-agent system for end-to-end architecture governance and va
 │  │   Overview      │ │ - Controls      │ │ - Multi-step    │ │
 │  │   - Quick       │ │ - Configuration │ │   Wizard        │ │
 │  │   Actions       │ │ - Monitoring    │ │ - Results       │ │
+│  └─────────────────┘ └─────────────────┘ └─────────────────┘ │
+│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ │
+│  │ File Upload     │ │ LLM Management  │ │ Reports &       │ │
+│  │ - Multi-format  │ │ - Dify/Ollama   │ │ Analytics       │ │
+│  │ - Processing    │ │ - Chat Interface│ │ - Metrics       │ │
+│  │ - Validation    │ │ - Model Mgmt    │ │ - Export        │ │
 │  └─────────────────┘ └─────────────────┘ └─────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -33,30 +39,61 @@ A comprehensive multi-agent system for end-to-end architecture governance and va
 │  │ Architecture│ │ Architecture │ │ Agent       │ │ Agent   │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────┘ │
 └─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    LLM Services                             │
+│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ │
+│  │   Dify Local    │ │   Ollama        │ │   File          │ │
+│  │   - API         │ │   - Models      │ │   Processing    │ │
+│  │   - Workflows   │ │   - Chat        │ │   - Extraction  │ │
+│  │   - Apps        │ │   - Generation  │ │   - Validation  │ │
+│  └─────────────────┘ └─────────────────┘ └─────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## ✨ Key Features
 
 ### 🎯 **Multi-Agent Collaboration**
 - **Core Brain Agent**: Central orchestrator managing specialized agents
-- **9 Specialized Agents**: Solution, Technical, Security, Data, Integration, Infrastructure, Costing, Application Portfolio, and Generic
+- **10 Specialized Agents**: Solution, Technical, Security, Data, Integration, Infrastructure, Costing, Application Portfolio, Generic, and Business
 - **Autonomous Task Distribution**: Intelligent routing based on governance scope
 - **Real-time Communication**: Inter-agent messaging and coordination
+- **Agent Control**: Start, stop, restart individual agents via API
 
 ### 🛡️ **Comprehensive Governance**
 - **End-to-End Validation**: Complete architecture assessment pipeline
 - **Multi-Domain Coverage**: Solution, technical, security, data, integration, infrastructure
-- **Compliance Frameworks**: TOGAF, ISO 42010, AWS Well-Architected, Azure Architecture, GCP Architecture
+- **Compliance Frameworks**: TOGAF, ISO 42010, AWS Well-Architected, Azure Architecture, GCP Architecture, NIST Cybersecurity, GDPR, SOX, HIPAA, ITIL
 - **Risk Assessment**: Automated risk scoring and mitigation recommendations
 
 ### 🎨 **Modern React Frontend**
-- **Dark Theme UI**: Professional, modern interface with Material-UI components
+- **Dark Theme UI**: Professional, modern interface with Material-UI v7.3.1
 - **Real-time Dashboard**: Live system monitoring and agent status
 - **Interactive Validation Wizard**: Multi-step governance validation process
 - **Agent Management**: Complete agent monitoring and control interface
 - **File Upload System**: Drag-and-drop architecture file upload with processing
+- **LLM Management**: Integrated Dify and Ollama management interface
 - **Reports & Analytics**: Comprehensive reporting and visualization
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+### 🤖 **Advanced LLM Integration**
+- **Local Dify Deployment**: Self-hosted Dify platform with Docker
+- **Ollama Integration**: Local LLM models with 7+ available models
+- **Multi-Model Support**: llava, llama3.2, qwen2.5-coder, nomic-embed-text, llama3.1
+- **Chat Interface**: Interactive chat with both Dify and Ollama models
+- **Text Generation**: Advanced text generation with configurable parameters
+- **Model Management**: Pull, list, and manage Ollama models
+- **Health Monitoring**: Real-time status monitoring of LLM services
+
+### 📁 **File Processing & Upload**
+- **Multi-Format Support**: PDF, DOCX, PPTX, PNG, JPG, SVG, TXT, and more
+- **Drag-and-Drop Interface**: Easy file upload with visual feedback
+- **Content Extraction**: Text, images, and diagrams extraction
+- **Architecture Element Detection**: Automatic identification of components, patterns, and decisions
+- **File Validation**: Compliance and quality assessment
+- **Processing Status**: Real-time upload and processing progress
+- **Metadata Extraction**: Document properties and creation information
 
 ### 🔧 **Advanced Capabilities**
 - **Human-in-Loop Oversight**: Manual review and approval workflows
@@ -70,6 +107,7 @@ A comprehensive multi-agent system for end-to-end architecture governance and va
 ### Prerequisites
 - Python 3.9+
 - Node.js 18+
+- Docker & Docker Compose
 - Git
 
 ### 1. Clone the Repository
@@ -92,7 +130,7 @@ cp config.env.example .env
 # Edit .env with your API keys and configuration
 
 # Create required directories
-mkdir -p logs data reports
+mkdir -p logs data reports uploads processed
 
 # Start the backend server
 python main.py
@@ -110,10 +148,36 @@ npm install
 npm start
 ```
 
-### 4. Access the Application
+### 4. Dify Local Setup (Optional)
+```bash
+# Start Dify locally using Docker
+cd dify-local/docker
+docker-compose up -d
+
+# Access Dify at http://localhost
+# Complete initialization and get API key
+# Update .env with your Dify API key
+```
+
+### 5. Ollama Setup (Optional)
+```bash
+# Install Ollama (if not already installed)
+# macOS: brew install ollama
+# Linux: curl -fsSL https://ollama.ai/install.sh | sh
+
+# Start Ollama
+ollama serve
+
+# Pull models (optional)
+ollama pull llava:latest
+ollama pull llama3.2:latest
+```
+
+### 6. Access the Application
 - **Frontend Dashboard**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
+- **Dify Console**: http://localhost (if running locally)
 
 ## 📱 Frontend Features
 
@@ -144,7 +208,7 @@ npm start
 - **Analytics Charts**: Performance trends and compliance metrics
 
 ### 📁 **File Upload & Processing**
-- **Multi-Format Support**: PDF, DOCX, PPTX, PNG, JPG, SVG, and more
+- **Multi-Format Support**: PDF, DOCX, PPTX, PNG, JPG, SVG, TXT, and more
 - **Drag-and-Drop Interface**: Easy file upload with visual feedback
 - **Architecture Domain Classification**: Automatic categorization by domain
 - **Content Extraction**: Text, images, and diagrams extraction
@@ -153,13 +217,12 @@ npm start
 - **Processing Status**: Real-time upload and processing progress
 - **Metadata Extraction**: Document properties and creation information
 
-### 🤖 **LLM Integration**
-- **Dify Platform Integration**: Connect to hosted Dify applications and workflows
-- **Ollama Local LLM**: Run local language models with Ollama
-- **Multi-Model Support**: Switch between different LLM providers
+### 🤖 **LLM Management**
+- **Dify Integration**: Connect to local or hosted Dify applications
+- **Ollama Management**: List, pull, and manage local LLM models
 - **Chat Interface**: Interactive chat with both Dify and Ollama models
-- **Model Management**: Pull, list, and manage Ollama models
-- **Health Monitoring**: Real-time status monitoring of LLM services
+- **Text Generation**: Generate text with configurable parameters
+- **Model Health**: Real-time monitoring of LLM service status
 - **Workflow Execution**: Execute Dify workflows for complex AI tasks
 
 ### ⚙️ **Settings**
@@ -181,7 +244,7 @@ npm start
 - `GET /governance/status/{validation_id}` - Check validation status
 - `GET /governance/results/{validation_id}` - Get validation results
 
-### Agent Endpoints
+### Agent Control Endpoints
 - `GET /agents/{agent_id}` - Get agent details
 - `POST /agents/{agent_id}/start` - Start agent
 - `POST /agents/{agent_id}/stop` - Stop agent
@@ -257,13 +320,34 @@ npm start
 - Dependency mapping
 - Modernization planning
 
+### **Generic Agent**
+- General-purpose validation
+- Custom rule evaluation
+- Flexible assessment capabilities
+- Extensible validation framework
+
+### **Business Agent**
+- Business process validation
+- Stakeholder alignment
+- Value proposition assessment
+- Strategic alignment checking
+
 ## 🔧 Configuration
 
 ### Environment Variables
 ```bash
-# Dify Platform
+# Dify Platform (Local or Hosted)
 DIFY_API_KEY=your_dify_api_key
-DIFY_BASE_URL=https://api.dify.ai/v1
+DIFY_BASE_URL=http://localhost/api  # For local deployment
+DIFY_WORKSPACE_ID=your_workspace_id
+DIFY_APP_ID=your_app_id
+
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llava:latest
+OLLAMA_TIMEOUT=120
+OLLAMA_TEMPERATURE=0.7
+OLLAMA_MAX_TOKENS=4096
 
 # LLM Providers
 OPENAI_API_KEY=your_openai_key
@@ -315,6 +399,8 @@ python main.py --production
 - **Availability**: 99.9% uptime
 - **Accuracy**: > 95% validation accuracy
 - **Scalability**: Horizontal scaling support
+- **File Processing**: Support for files up to 100MB
+- **LLM Response**: < 30 seconds for complex queries
 
 ## 🔒 Security & Compliance
 
@@ -322,7 +408,26 @@ python main.py --production
 - **RBAC**: Role-based access control
 - **Audit Logging**: Complete audit trail
 - **Data Encryption**: At-rest and in-transit encryption
-- **Compliance**: ISO 42010, TOGAF, GDPR, SOX, HIPAA
+- **Compliance**: ISO 42010, TOGAF, GDPR, SOX, HIPAA, NIST Cybersecurity
+- **File Security**: Secure file upload and processing
+- **API Security**: Rate limiting and authentication
+
+## 🧪 Testing
+
+### End-to-End Testing
+```bash
+# Run comprehensive tests
+python test_end_to_end.py
+python test_file_upload.py
+python test_llm_integration.py
+```
+
+### Frontend Testing
+```bash
+cd frontend
+npm test
+npm run build
+```
 
 ## 🤝 Contributing
 
@@ -344,6 +449,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🎯 Roadmap
 
+- [x] React frontend with Material-UI
+- [x] Dify local deployment integration
+- [x] Ollama LLM integration
+- [x] File upload and processing
+- [x] Agent control endpoints
+- [x] LLM management interface
 - [ ] Advanced ML model integration
 - [ ] Real-time collaboration features
 - [ ] Mobile application
@@ -353,6 +464,25 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [ ] Advanced reporting templates
 - [ ] Multi-tenant support
 
+## 📈 Current Status
+
+### ✅ **Completed Features**
+- **Backend API**: Fully functional with 10 specialized agents
+- **React Frontend**: Modern UI with all major components
+- **Dify Integration**: Local deployment with Docker
+- **Ollama Integration**: 7+ models available
+- **File Processing**: Multi-format support
+- **Agent Management**: Complete control interface
+- **LLM Management**: Dify and Ollama management
+- **Testing**: Comprehensive test suite
+
+### 🚀 **System Health**
+- **Backend**: ✅ Running on http://localhost:8000
+- **Frontend**: ✅ Running on http://localhost:3000
+- **Dify**: ✅ Local deployment available
+- **Ollama**: ✅ 7 models available
+- **Agents**: ✅ 10 agents active and healthy
+
 ---
 
-**Built with ❤️ using FastAPI, React, and Material-UI**
+**Built with ❤️ using FastAPI, React, Material-UI, Dify, and Ollama**
