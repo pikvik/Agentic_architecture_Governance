@@ -225,6 +225,69 @@ class BaseAgent(ABC):
         except Exception as e:
             self.logger.error(f"Error during shutdown of {self.name}: {e}")
     
+    async def start(self) -> bool:
+        """Start the agent"""
+        try:
+            self.logger.info(f"Starting {self.name} agent")
+            
+            if self.status == AgentStatus.OFFLINE:
+                # Re-initialize if agent was shut down
+                return await self.initialize()
+            elif self.status == AgentStatus.IDLE:
+                # Agent is already idle, just mark as active
+                self.status = AgentStatus.IDLE
+                self.logger.info(f"{self.name} agent started successfully")
+                return True
+            else:
+                # Agent is busy or in error state
+                self.logger.warning(f"Cannot start {self.name} agent in {self.status} state")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Failed to start {self.name} agent: {e}")
+            return False
+    
+    async def stop(self) -> bool:
+        """Stop the agent"""
+        try:
+            self.logger.info(f"Stopping {self.name} agent")
+            
+            if self.status == AgentStatus.BUSY:
+                # Wait for current task to complete or timeout
+                if self.current_task:
+                    self.logger.warning(f"Waiting for current task {self.current_task.task_id} to complete")
+                    # In a real implementation, you might want to implement task cancellation
+                    
+            self.status = AgentStatus.IDLE
+            self.logger.info(f"{self.name} agent stopped successfully")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to stop {self.name} agent: {e}")
+            return False
+    
+    async def restart(self) -> bool:
+        """Restart the agent"""
+        try:
+            self.logger.info(f"Restarting {self.name} agent")
+            
+            # Stop the agent first
+            stop_success = await self.stop()
+            if not stop_success:
+                return False
+            
+            # Start the agent
+            start_success = await self.start()
+            if not start_success:
+                return False
+            
+            self.logger.info(f"{self.name} agent restarted successfully")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to restart {self.name} agent: {e}")
+            return False
+    
     @abstractmethod
     async def _cleanup(self) -> None:
         """Agent-specific cleanup"""

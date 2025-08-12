@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Application Portfolio Agent - Application lifecycle management
 """

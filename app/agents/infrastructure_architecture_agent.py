@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Infrastructure Architecture Agent - Cloud infrastructure optimization
 """

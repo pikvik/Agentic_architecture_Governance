@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Technical Architecture Agent - Code analysis and tech stack validation
 """

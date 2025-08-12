@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Data Architecture Agent - Data quality and governance validation
 """

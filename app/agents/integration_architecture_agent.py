@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Integration Architecture Agent - API and service interoperability validation
 """

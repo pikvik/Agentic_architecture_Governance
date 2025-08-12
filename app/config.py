@@ -2,8 +2,8 @@
 Configuration management for the Agentic AI Swarm
 """
 
-from typing import Optional
-from pydantic import BaseSettings, Field
+from typing import Optional, Dict, Any
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -13,6 +13,15 @@ class Settings(BaseSettings):
     # Dify Platform Configuration
     dify_api_key: str = Field(..., env="DIFY_API_KEY")
     dify_base_url: str = Field("https://api.dify.ai/v1", env="DIFY_BASE_URL")
+    dify_workspace_id: Optional[str] = Field(None, env="DIFY_WORKSPACE_ID")
+    dify_app_id: Optional[str] = Field(None, env="DIFY_APP_ID")
+    
+    # Ollama Configuration
+    ollama_base_url: str = Field("http://localhost:11434", env="OLLAMA_BASE_URL")
+    ollama_model: str = Field("llama2", env="OLLAMA_MODEL")
+    ollama_timeout: int = Field(120, env="OLLAMA_TIMEOUT")
+    ollama_temperature: float = Field(0.7, env="OLLAMA_TEMPERATURE")
+    ollama_max_tokens: int = Field(4096, env="OLLAMA_MAX_TOKENS")
     
     # LLM Provider API Keys
     openai_api_key: Optional[str] = Field(None, env="OPENAI_API_KEY")

@@ -18,22 +18,22 @@ class ArchitectureDomain(str, Enum):
     DATA = "data"
     INTEGRATION = "integration"
     INFRASTRUCTURE = "infrastructure"
-    COSTING = "costing"
-    APPLICATION_PORTFOLIO = "application_portfolio"
+    APPLICATION = "application"
+    BUSINESS = "business"
 
 
 class ComponentType(str, Enum):
-    """Types of architecture components"""
+    """Component types"""
     SERVICE = "service"
     DATABASE = "database"
     API = "api"
-    FRONTEND = "frontend"
-    BACKEND = "backend"
-    INFRASTRUCTURE = "infrastructure"
+    UI = "ui"
+    QUEUE = "queue"
+    CACHE = "cache"
+    STORAGE = "storage"
+    NETWORK = "network"
     SECURITY = "security"
-    INTEGRATION = "integration"
-    DATA_STORE = "data_store"
-    EXTERNAL_SERVICE = "external_service"
+    MONITORING = "monitoring"
 
 
 class ComponentStatus(str, Enum):
@@ -43,120 +43,164 @@ class ComponentStatus(str, Enum):
     DEPRECATED = "deprecated"
     PLANNED = "planned"
     IN_DEVELOPMENT = "in_development"
-    MAINTENANCE = "maintenance"
 
 
 class ArchitectureComponent(BaseModel):
-    """Architecture component model"""
+    """Architecture component"""
     
+    component_id: str = Field(..., description="Unique component identifier")
     name: str = Field(..., description="Component name")
     component_type: ComponentType = Field(..., description="Type of component")
     domain: ArchitectureDomain = Field(..., description="Architecture domain")
-    status: ComponentStatus = Field(ComponentStatus.ACTIVE, description="Component status")
-    
-    # Technical details
-    technology_stack: List[str] = Field(default_factory=list, description="Technologies used")
-    version: str = Field("1.0.0", description="Component version")
+    status: ComponentStatus = Field(..., description="Component status")
     description: str = Field(..., description="Component description")
-    
-    # Dependencies and relationships
+    technologies: List[str] = Field(default_factory=list, description="Technologies used")
     dependencies: List[str] = Field(default_factory=list, description="Component dependencies")
-    dependents: List[str] = Field(default_factory=list, description="Components that depend on this")
     interfaces: List[str] = Field(default_factory=list, description="Component interfaces")
-    
-    # Configuration and settings
-    config: Dict[str, Any] = Field(default_factory=dict, description="Component configuration")
-    environment_variables: Dict[str, str] = Field(default_factory=dict, description="Environment variables")
-    
-    # Performance and monitoring
-    performance_metrics: Dict[str, float] = Field(default_factory=dict, description="Performance metrics")
-    health_status: str = Field("healthy", description="Component health status")
-    last_monitored: Optional[datetime] = Field(None, description="Last monitoring timestamp")
-    
-    # Security and compliance
-    security_score: float = Field(100.0, description="Security score (0-100)")
-    compliance_status: Dict[str, str] = Field(default_factory=dict, description="Compliance status by framework")
-    vulnerabilities: List[Dict[str, Any]] = Field(default_factory=list, description="Security vulnerabilities")
-    
-    # Cost and resource usage
-    cost_per_month: float = Field(0.0, description="Monthly cost estimate")
-    resource_usage: Dict[str, float] = Field(default_factory=dict, description="Resource usage metrics")
-    
-    # Documentation and metadata
-    documentation_url: Optional[str] = Field(None, description="Documentation URL")
-    repository_url: Optional[str] = Field(None, description="Source code repository URL")
-    owner: Optional[str] = Field(None, description="Component owner")
-    team: Optional[str] = Field(None, description="Responsible team")
-    
-    # Tags and categorization
-    tags: List[str] = Field(default_factory=list, description="Component tags")
-    business_capability: Optional[str] = Field(None, description="Associated business capability")
-    criticality: str = Field("medium", description="Business criticality level")
-    
-    class Config:
-        use_enum_values = True
+    configuration: Dict[str, Any] = Field(default_factory=dict, description="Component configuration")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
 
 class ArchitecturePattern(BaseModel):
-    """Architecture pattern model"""
+    """Architecture pattern"""
     
+    pattern_id: str = Field(..., description="Unique pattern identifier")
     name: str = Field(..., description="Pattern name")
-    pattern_type: str = Field(..., description="Type of pattern")
+    category: str = Field(..., description="Pattern category")
     description: str = Field(..., description="Pattern description")
-    
-    # Pattern details
-    components: List[str] = Field(default_factory=list, description="Components in this pattern")
-    relationships: List[Dict[str, Any]] = Field(default_factory=list, description="Component relationships")
-    constraints: List[str] = Field(default_factory=list, description="Pattern constraints")
-    
-    # Benefits and trade-offs
     benefits: List[str] = Field(default_factory=list, description="Pattern benefits")
-    trade_offs: List[str] = Field(default_factory=list, description="Pattern trade-offs")
-    
-    # Usage context
-    applicable_domains: List[ArchitectureDomain] = Field(default_factory=list, description="Applicable domains")
+    drawbacks: List[str] = Field(default_factory=list, description="Pattern drawbacks")
     use_cases: List[str] = Field(default_factory=list, description="Use cases")
-    
-    # Implementation guidance
-    implementation_steps: List[str] = Field(default_factory=list, description="Implementation steps")
-    best_practices: List[str] = Field(default_factory=list, description="Best practices")
-    
-    # References
-    reference_urls: List[str] = Field(default_factory=list, description="Reference URLs")
+    implementation_guidance: str = Field(..., description="Implementation guidance")
     examples: List[str] = Field(default_factory=list, description="Example implementations")
-    
-    class Config:
-        use_enum_values = True
 
 
 class ArchitectureDecision(BaseModel):
-    """Architecture decision record (ADR)"""
+    """Architecture Decision Record (ADR)"""
     
+    adr_id: str = Field(..., description="Unique ADR identifier")
     title: str = Field(..., description="Decision title")
-    status: str = Field("proposed", description="Decision status")
+    status: str = Field(..., description="Decision status")
     context: str = Field(..., description="Decision context")
+    decision: str = Field(..., description="Decision made")
+    consequences: List[str] = Field(default_factory=list, description="Decision consequences")
+    alternatives_considered: List[str] = Field(default_factory=list, description="Alternatives considered")
+    decision_drivers: List[str] = Field(default_factory=list, description="Decision drivers")
+    created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
+    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+
+
+class FileType(str, Enum):
+    """Supported file types for architecture documents"""
+    PDF = "pdf"
+    PPT = "ppt"
+    PPTX = "pptx"
+    DOC = "doc"
+    DOCX = "docx"
+    PNG = "png"
+    JPG = "jpg"
+    JPEG = "jpeg"
+    SVG = "svg"
+    DIA = "dia"
+    DRAW_IO = "drawio"
+    LUCIDCHART = "lucidchart"
+    VISIO = "vsdx"
+
+
+class FileUploadStatus(str, Enum):
+    """File upload status"""
+    UPLOADING = "uploading"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    VALIDATED = "validated"
+
+
+class ArchitectureFile(BaseModel):
+    """Architecture file model"""
     
-    # Decision details
-    decision: str = Field(..., description="The decision made")
-    consequences: List[str] = Field(default_factory=list, description="Consequences of the decision")
-    alternatives: List[str] = Field(default_factory=list, description="Alternatives considered")
+    file_id: str = Field(..., description="Unique file identifier")
+    filename: str = Field(..., description="Original filename")
+    file_type: FileType = Field(..., description="File type")
+    file_size: int = Field(..., description="File size in bytes")
+    upload_path: str = Field(..., description="File storage path")
+    upload_status: FileUploadStatus = Field(..., description="Upload status")
+    processing_status: str = Field(default="pending", description="Processing status")
     
-    # Impact and scope
-    impacted_components: List[str] = Field(default_factory=list, description="Impacted components")
-    impacted_domains: List[ArchitectureDomain] = Field(default_factory=list, description="Impacted domains")
+    # Metadata
+    title: Optional[str] = Field(None, description="Document title")
+    description: Optional[str] = Field(None, description="Document description")
+    author: Optional[str] = Field(None, description="Document author")
+    version: Optional[str] = Field(None, description="Document version")
+    created_date: Optional[datetime] = Field(None, description="Document creation date")
     
-    # Decision makers and timeline
-    decision_makers: List[str] = Field(default_factory=list, description="Decision makers")
-    decision_date: Optional[datetime] = Field(None, description="Decision date")
-    review_date: Optional[datetime] = Field(None, description="Review date")
+    # Architecture context
+    architecture_domain: Optional[ArchitectureDomain] = Field(None, description="Architecture domain")
+    components_extracted: List[str] = Field(default_factory=list, description="Extracted component IDs")
+    patterns_identified: List[str] = Field(default_factory=list, description="Identified pattern IDs")
+    decisions_extracted: List[str] = Field(default_factory=list, description="Extracted decision IDs")
     
-    # Rationale and evidence
-    rationale: str = Field(..., description="Decision rationale")
-    evidence: List[str] = Field(default_factory=list, description="Supporting evidence")
+    # Processing results
+    extracted_text: Optional[str] = Field(None, description="Extracted text content")
+    extracted_images: List[str] = Field(default_factory=list, description="Extracted image paths")
+    diagrams_detected: List[str] = Field(default_factory=list, description="Detected diagram paths")
     
-    # Compliance and governance
-    compliance_impact: Dict[str, str] = Field(default_factory=dict, description="Compliance impact")
-    risk_assessment: str = Field("", description="Risk assessment")
+    # Validation results
+    validation_results: List[Dict[str, Any]] = Field(default_factory=list, description="Validation results")
+    compliance_score: Optional[float] = Field(None, description="Compliance score")
+    quality_score: Optional[float] = Field(None, description="Quality score")
     
-    class Config:
-        use_enum_values = True
+    # Timestamps
+    uploaded_at: datetime = Field(default_factory=datetime.utcnow, description="Upload timestamp")
+    processed_at: Optional[datetime] = Field(None, description="Processing completion timestamp")
+    validated_at: Optional[datetime] = Field(None, description="Validation completion timestamp")
+    
+    # User context
+    uploaded_by: Optional[str] = Field(None, description="User who uploaded the file")
+    organization_id: Optional[str] = Field(None, description="Organization context")
+    project_id: Optional[str] = Field(None, description="Project context")
+
+
+class FileProcessingResult(BaseModel):
+    """File processing result"""
+    
+    file_id: str = Field(..., description="File identifier")
+    processing_success: bool = Field(..., description="Processing success status")
+    processing_errors: List[str] = Field(default_factory=list, description="Processing errors")
+    
+    # Extracted content
+    text_content: Optional[str] = Field(None, description="Extracted text content")
+    image_paths: List[str] = Field(default_factory=list, description="Extracted image paths")
+    diagram_paths: List[str] = Field(default_factory=list, description="Extracted diagram paths")
+    
+    # Architecture elements
+    components_found: List[Dict[str, Any]] = Field(default_factory=list, description="Found components")
+    patterns_found: List[Dict[str, Any]] = Field(default_factory=list, description="Found patterns")
+    decisions_found: List[Dict[str, Any]] = Field(default_factory=list, description="Found decisions")
+    
+    # Metadata
+    document_metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
+    processing_time: float = Field(..., description="Processing time in seconds")
+    processed_at: datetime = Field(default_factory=datetime.utcnow, description="Processing timestamp")
+
+
+class FileUploadRequest(BaseModel):
+    """File upload request"""
+    
+    filename: str = Field(..., description="Original filename")
+    file_type: FileType = Field(..., description="File type")
+    file_size: int = Field(..., description="File size in bytes")
+    architecture_domain: Optional[ArchitectureDomain] = Field(None, description="Architecture domain")
+    description: Optional[str] = Field(None, description="File description")
+    project_id: Optional[str] = Field(None, description="Project context")
+    user_id: Optional[str] = Field(None, description="User uploading the file")
+
+
+class FileValidationRequest(BaseModel):
+    """File validation request"""
+    
+    file_id: str = Field(..., description="File to validate")
+    validation_rules: List[str] = Field(default_factory=list, description="Validation rules to apply")
+    compliance_frameworks: List[str] = Field(default_factory=list, description="Compliance frameworks")
+    quality_standards: List[str] = Field(default_factory=list, description="Quality standards")
+    priority: str = Field("medium", description="Validation priority")

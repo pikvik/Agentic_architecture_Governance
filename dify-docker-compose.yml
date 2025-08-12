@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  dify-api:
+    image: langgenius/dify-api:latest
+    container_name: dify-api
+    restart: always
+    environment:
+      - EDITION=SELF_HOSTED
+      - CONSOLE_URL=http://localhost:3000
+      - SERVICE_API_URL=http://localhost:5001
+      - APP_API_URL=http://localhost:5001
+      - CORE_API_URL=http://localhost:5001
+      - WORKER_API_URL=http://localhost:5001
+      - WEB_API_URL=http://localhost:5001
+      - FILES_URL=http://localhost:5001
+      - DATABASE_URL=postgresql://postgres:dify@dify-postgres:5432/dify
+      - REDIS_URL=redis://dify-redis:6379/0
+      - CELERY_BROKER_URL=redis://dify-redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://dify-redis:6379/1
+      - SECRET_KEY=your-secret-key-here
+      - JWT_SECRET_KEY=your-jwt-secret-key-here
+      - ENCRYPTION_KEY=your-encryption-key-here
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    ports:
+      - "5001:5001"
+    depends_on:
+      - dify-postgres
+      - dify-redis
+    volumes:
+      - dify-uploads:/app/api/storage
+    networks:
+      - dify-network
+
+  dify-web:
+    image: langgenius/dify-web:latest
+    container_name: dify-web
+    restart: always
+    environment:
+      - CONSOLE_API_URL=http://localhost:5001
+      - APP_API_URL=http://localhost:5001
+      - SERVICE_API_URL=http://localhost:5001
+      - EDITION=SELF_HOSTED
+    ports:
+      - "3000:3000"
+    depends_on:
+      - dify-api
+    networks:
+      - dify-network
+
+  dify-worker:
+    image: langgenius/dify-worker:latest
+    container_name: dify-worker
+    restart: always
+    environment:
+      - EDITION=SELF_HOSTED
+      - DATABASE_URL=postgresql://postgres:dify@dify-postgres:5432/dify
+      - REDIS_URL=redis://dify-redis:6379/0
+      - CELERY_BROKER_URL=redis://dify-redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://dify-redis:6379/1
+      - SECRET_KEY=your-secret-key-here
+      - JWT_SECRET_KEY=your-jwt-secret-key-here
+      - ENCRYPTION_KEY=your-encryption-key-here
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - dify-postgres
+      - dify-redis
+    volumes:
+      - dify-uploads:/app/worker/storage
+    networks:
+      - dify-network
+
+  dify-postgres:
+    image: postgres:15-alpine
+    container_name: dify-postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=dify
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=dify
+    ports:
+      - "5432:5432"
+    volumes:
+      - dify-postgres-data:/var/lib/postgresql/data
+    networks:
+      - dify-network
+
+  dify-redis:
+    image: redis:7-alpine
+    container_name: dify-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - dify-redis-data:/data
+    networks:
+      - dify-network
+
+volumes:
+  dify-postgres-data:
+  dify-redis-data:
+  dify-uploads:
+
+networks:
+  dify-network:
+    driver: bridge

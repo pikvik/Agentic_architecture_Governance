@@ -1,7 +1,9 @@
+from typing import Dict, Any
 """
 Security Architecture Agent - Security validation and risk assessment
 """
 
+from typing import Dict, Any
 from app.agents.base_agent import BaseAgent
 from app.models.agents import AgentType, AgentStatus, AgentTask
 from app.models.governance import ValidationResult, ValidationStatus, ValidationSeverity

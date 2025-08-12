@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Generic Agent - General purpose agent for various tasks
 """

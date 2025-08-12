@@ -1,3 +1,4 @@
+from typing import Dict, Any
 """
 Solution Architecture Agent - Validates solution designs and patterns
 """
