@@ -32,7 +32,7 @@ class DifyService:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    f"{self.base_url}/workspaces",
+                    f"{self.base_url}/info",
                     headers=self.headers,
                     timeout=10
                 ) as response:

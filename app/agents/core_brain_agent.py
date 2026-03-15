@@ -12,13 +12,14 @@ from uuid import uuid4
 from app.agents.base_agent import BaseAgent
 from app.models.agents import AgentType, AgentStatus, AgentTask
 from app.models.governance import (
-    GovernanceRequest, 
-    GovernanceResponse, 
+    GovernanceRequest,
+    GovernanceResponse,
     ValidationResult,
     ValidationStatus,
     ValidationSeverity,
     GovernanceScope
 )
+from pydantic import ValidationError
 from app.config import settings
 
 
@@ -135,8 +136,9 @@ class CoreBrainAgent(BaseAgent):
     async def _process_task(self, task: AgentTask) -> Dict[str, Any]:
         """Process governance validation task"""
         try:
-            # Parse governance request
-            governance_request = GovernanceRequest(**task.input_data)
+            # Parse governance request - input_data may be wrapped under "governance_request" key
+            input_data = task.input_data.get("governance_request", task.input_data)
+            governance_request = GovernanceRequest(**input_data)
             
             self.logger.info(f"Processing governance request: {governance_request.request_id}")
             
@@ -246,10 +248,13 @@ class CoreBrainAgent(BaseAgent):
     async def _execute_parallel_tasks(self, subtasks: List[AgentTask]) -> List[Dict[str, Any]]:
         """Execute tasks in parallel across specialized agents"""
         try:
+            # Build reverse lookup: agent UUID -> agent object
+            agent_by_id = {agent.agent_id: agent for agent in self.specialized_agents.values()}
+
             # Create tasks for each agent
             tasks = []
             for subtask in subtasks:
-                agent = self.specialized_agents.get(subtask.agent_id)
+                agent = agent_by_id.get(subtask.agent_id)
                 if agent and agent.status == AgentStatus.IDLE:
                     task = asyncio.create_task(agent.process_task(subtask))
                     tasks.append(task)
@@ -295,9 +300,15 @@ class CoreBrainAgent(BaseAgent):
             
             for result in agent_results:
                 if result.get("status") == "completed":
-                    # Extract validation results
+                    # Extract validation results - reconstruct objects from dicts
                     if "validation_results" in result:
-                        all_validation_results.extend(result["validation_results"])
+                        for vr in result["validation_results"]:
+                            try:
+                                all_validation_results.append(
+                                    vr if isinstance(vr, ValidationResult) else ValidationResult(**vr)
+                                )
+                            except (ValidationError, Exception) as e:
+                                self.logger.warning(f"Skipping invalid validation result: {e}")
                     
                     # Extract scores
                     if "risk_score" in result:
@@ -379,8 +390,9 @@ class CoreBrainAgent(BaseAgent):
         failed_validations = len([r for r in validation_results if r.status == ValidationStatus.FAILED])
         warning_validations = len([r for r in validation_results if r.status == ValidationStatus.WARNING])
         
+        scope_label = governance_request.scope.value if hasattr(governance_request.scope, 'value') else governance_request.scope
         summary = f"""
-        Governance validation completed for scope: {governance_request.scope.value}
+        Governance validation completed for scope: {scope_label}
         
         Overall Results:
         - Total validations: {total_validations}

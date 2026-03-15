@@ -11,7 +11,21 @@ from uuid import uuid4
 
 from app.config import settings
 from app.models.agents import Agent, AgentStatus, AgentType, AgentTask
-from app.models.governance import ValidationResult, ValidationStatus, ValidationSeverity
+from app.models.governance import ValidationResult, ValidationStatus, ValidationSeverity, GovernanceScope
+
+# Map AgentType values to matching GovernanceScope values
+_AGENT_TYPE_TO_SCOPE = {
+    AgentType.SOLUTION_ARCHITECTURE: GovernanceScope.SOLUTION,
+    AgentType.TECHNICAL_ARCHITECTURE: GovernanceScope.TECHNICAL,
+    AgentType.SECURITY_ARCHITECTURE: GovernanceScope.SECURITY,
+    AgentType.DATA_ARCHITECTURE: GovernanceScope.DATA,
+    AgentType.INTEGRATION_ARCHITECTURE: GovernanceScope.INTEGRATION,
+    AgentType.INFRASTRUCTURE_ARCHITECTURE: GovernanceScope.INFRASTRUCTURE,
+    AgentType.COSTING: GovernanceScope.COSTING,
+    AgentType.APPLICATION_PORTFOLIO: GovernanceScope.APPLICATION_PORTFOLIO,
+    AgentType.CORE_BRAIN: GovernanceScope.COMPREHENSIVE,
+    AgentType.GENERIC: GovernanceScope.COMPREHENSIVE,
+}
 
 
 class BaseAgent(ABC):
@@ -316,7 +330,7 @@ class BaseAgent(ABC):
             details=details or {},
             recommendations=recommendations or [],
             compliance_frameworks=compliance_frameworks or [],
-            domain=self.agent_type
+            domain=_AGENT_TYPE_TO_SCOPE.get(self.agent_type, GovernanceScope.COMPREHENSIVE)
         )
     
     async def communicate_with_agent(self, target_agent_id: str, message: Dict[str, Any]) -> Dict[str, Any]:

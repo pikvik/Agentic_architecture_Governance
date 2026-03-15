@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     """Application settings with environment variable support"""
     
     # Dify Platform Configuration
-    dify_api_key: str = Field(..., env="DIFY_API_KEY")
+    dify_api_key: str = Field("", env="DIFY_API_KEY")
     dify_base_url: str = Field("https://api.dify.ai/v1", env="DIFY_BASE_URL")
     dify_workspace_id: Optional[str] = Field(None, env="DIFY_WORKSPACE_ID")
     dify_app_id: Optional[str] = Field(None, env="DIFY_APP_ID")
